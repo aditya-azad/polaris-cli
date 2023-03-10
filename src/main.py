@@ -1,14 +1,47 @@
 from datetime import datetime
 
-from rich import box, print
 from rich.live import Live
-from rich.align import Align
-from rich.console import Console, Group
+from rich.console import Console
 from rich.layout import Layout
 from rich.panel import Panel
 from rich.table import Table
 
 console = Console()
+
+
+class Task:
+    def __init__(self, data: str):
+        # TODO: The data has to be parsed to get out date time and stuff
+        pass
+    def save(self):
+        pass
+    # TODO: some sort of get and set item that checks if it is valid
+
+
+class ContentScreen:
+    def __rich__(self) -> Panel:
+        grid = Table.grid()
+        grid.add_column(style="cyan", justify="left")
+        grid.add_column(justify="left")
+        grid.add_row("D", "This is a task")
+        grid.add_row("W", "This is another task")
+        grid.add_row(" ", "Do you realize how tasky it is")
+        return Panel(
+            grid,
+            title="Today"
+        )
+
+
+class Header:
+    def __rich__(self) -> Panel:
+        grid = Table.grid(expand=True)
+        grid.add_column(justify="left", ratio=1)
+        grid.add_column(justify="right")
+        grid.add_row(
+            "Polarist",
+            datetime.now().ctime(),
+        )
+        return Panel(grid)
 
 
 def make_layout() -> Layout:
@@ -20,57 +53,9 @@ def make_layout() -> Layout:
     return layout
 
 
-def make_sponsor_message() -> Panel:
-    """Some example content."""
-    sponsor_message = Table.grid(padding=1)
-    sponsor_message.add_column(style="green", justify="right")
-    sponsor_message.add_column(no_wrap=True)
-    sponsor_message.add_row(
-        "Twitter",
-        "[u blue link=https://twitter.com/textualize]https://twitter.com/textualize",
-    )
-    sponsor_message.add_row(
-        "CEO",
-        "[u blue link=https://twitter.com/willmcgugan]https://twitter.com/willmcgugan",
-    )
-    sponsor_message.add_row(
-        "Textualize", "[u blue link=https://www.textualize.io]https://www.textualize.io"
-    )
-
-    message = Table.grid(padding=1)
-    message.add_column()
-    message.add_column(no_wrap=True)
-    message.add_row(sponsor_message)
-
-    message_panel = Panel(
-        Align.center(
-            Group("\n", Align.center(sponsor_message)),
-            vertical="middle",
-        ),
-        box=box.ROUNDED,
-        padding=(1, 2),
-        title="[b red]Thanks for trying out Rich!",
-        border_style="bright_blue",
-    )
-    return message_panel
-
-
-class Header:
-    """Display header with clock."""
-    def __rich__(self) -> Panel:
-        grid = Table.grid(expand=True)
-        grid.add_column(justify="left", ratio=1)
-        grid.add_column(justify="right")
-        grid.add_row(
-            "Polaris",
-            datetime.now().ctime().replace(":", "[blink]:[/]"),
-        )
-        return Panel(grid)
-
-
 layout = make_layout()
 layout["header"].update(Header())
-layout["body"].update(make_sponsor_message())
+layout["body"].update(ContentScreen())
 
 
 with Live(layout, refresh_per_second=10, screen=True) as live:
